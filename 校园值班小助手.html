@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>校园值日智能排班系统 · 大学版</title>
+    <style>
+        /* ===== 全局 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* ===== 登录 ===== */
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 20px;
+        }
+        .login-box {
+            background: white;
+            border-radius: 24px;
+            padding: 44px 36px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            animation: fadeUp 0.6s ease;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .login-box .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .login-box .logo .icon {
+            font-size: 48px;
+        }
+        .login-box .logo h1 {
+            font-size: 22px;
+            color: #1a1a2e;
+            margin-top: 8px;
+        }
+        .login-box .logo p {
+            color: #888;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: 0.3s;
+            background: #fafbfc;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.1);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4a6cf7, #6a3de8);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 108, 247, 0.4);
+        }
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #16a34a;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #d1d5db;
+            color: #6b7280;
+        }
+        .btn-outline:hover {
+            border-color: #4a6cf7;
+            color: #4a6cf7;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: auto;
+        }
+        .btn-xs {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            width: auto;
+        }
+        .login-tips {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+        }
+        .login-tips .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-green {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+        .tag-blue {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        .tag-purple {
+            background: #ede9fe;
+            color: #7c3aed;
+            border: 1px solid #c4b5fd;
+        }
+        .tag-orange {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+        .tag-gray {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+        .tag-success {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+        .tag-warning {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+        .tag-danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        /* ===== 主应用 ===== */
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .navbar {
+            background: white;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+            cursor: default;
+        }
+        .navbar .brand .gradient {
+            background: linear-gradient(135deg, #4a6cf7, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .navbar .user-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .user-area .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a6cf7, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .navbar .user-area .uname {
+            font-weight: 500;
+            color: #333;
+        }
+        .navbar .user-area .role-badge {
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .navbar .user-area .logout-btn {
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .navbar .user-area .logout-btn:hover {
+            background: #f3f4f6;
+            color: #ef4444;
+        }
+
+        /* ===== 主体 ===== */
+        .main {
+            display: flex;
+            flex: 1;
+            padding: 16px 20px;
+            gap: 16px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ===== 侧边栏 ===== */
+        .sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.25s;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+        .sidebar-item:hover {
+            background: #f3f4f6;
+            color: #1a1a2e;
+        }
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #4a6cf715, #7c3aed15);
+            color: #4a6cf7;
+            font-weight: 600;
+        }
+        .sidebar-item .icon {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+        }
+
+        /* ===== 内容区 ===== */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f3f4f6;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .card-header .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-header .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== 统计卡片 ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .stat-card .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .stat-card .info .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1.2;
+        }
+        .stat-card .info .label {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        /* ===== 表格 ===== */
+        .table-wrap {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #6b7280;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        /* ===== 值日卡片列表 ===== */
+        .duty-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .duty-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            transition: 0.2s;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .duty-item:hover {
+            border-color: #d1d5db;
+        }
+        .duty-item .date-box {
+            text-align: center;
+            min-width: 64px;
+            padding-right: 14px;
+            border-right: 1px solid #e5e7eb;
+        }
+        .duty-item .date-box .day {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a6cf7;
+            line-height: 1.2;
+        }
+        .duty-item .date-box .weekday {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .duty-item .info {
+            flex: 1;
+            min-width: 100px;
+        }
+        .duty-item .info .task {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .duty-item .info .area {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .duty-item .action {
+            margin-left: auto;
+        }
+
+        /* ===== 筛选栏 ===== */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .filter-bar input,
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: 0.2s;
+        }
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+        .modal-header .close {
+            cursor: pointer;
+            font-size: 24px;
+            color: #9ca3af;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .modal-header .close:hover {
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
+        .modal .form-group {
+            margin-bottom: 14px;
+        }
+        .modal .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .modal .form-group input,
+        .modal .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+        .modal .btn {
+            margin-top: 4px;
+        }
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+        }
+        .modal .btn-row .btn {
+            flex: 1;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+        .empty-state .icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 160px;
+            }
+        }
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+                padding: 12px;
+                gap: 12px;
+            }
+            .sidebar {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                padding: 6px;
+                position: static;
+                gap: 4px;
+            }
+            .sidebar-item {
+                flex: 1;
+                min-width: 70px;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: 13px;
+                margin: 0;
+            }
+            .sidebar-item .label {
+                display: none;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card {
+                padding: 12px 14px;
+            }
+            .stat-card .info .value {
+                font-size: 20px;
+            }
+            .card {
+                padding: 14px 16px;
+            }
+            .navbar {
+                padding: 0 12px;
+                height: 56px;
+            }
+            .navbar .brand {
+                font-size: 15px;
+            }
+            .navbar .user-area .uname {
+                display: none;
+            }
+            .navbar .user-area .role-badge {
+                display: none;
+            }
+            .duty-item {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .duty-item .date-box {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                padding-bottom: 8px;
+                padding-right: 0;
+            }
+            .duty-item .action {
+                margin-left: 0;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .login-box {
+                padding: 32px 20px 24px;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stat-card .icon-box {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+            .stat-card .info .value {
+                font-size: 17px;
+            }
+            table {
+                font-size: 13px;
+            }
+            th,
+            td {
+                padding: 6px 8px;
+            }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: #9ca3af;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .w-full {
+            width: 100%;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // ================================================================
+        //  数据层
+        // ================================================================
+
+        // 用户表：学号/工号登录
+        let users = [
+            { id: 1, username: '2021001', password: '123456', real_name: '张老师', role: 'admin', email: 'zhang@edu.cn',
+                class_id: 1 },
+            { id: 2, username: '2021002', password: '123456', real_name: '李班长', role: 'monitor', email: 'li@edu.cn',
+                class_id: 1 },
+            { id: 3, username: '2021003', password: '123456', real_name: '王小明', role: 'student', email: 'wang@edu.cn',
+                class_id: 1 },
+            { id: 4, username: '2021004', password: '123456', real_name: '赵小红', role: 'student', email: 'zhao@edu.cn',
+                class_id: 1 },
+            { id: 5, username: '2021005', password: '123456', real_name: '刘小伟', role: 'student', email: 'liu@edu.cn',
+                class_id: 1 },
+            { id: 6, username: '2021006', password: '123456', real_name: '陈小丽', role: 'student', email: 'chen@edu.cn',
+                class_id: 1 },
+            { id: 7, username: '2021007', password: '123456', real_name: '杨小华', role: 'student', email: 'yang@edu.cn',
+                class_id: 1 },
+            { id: 8, username: '2021008', password: '123456', real_name: '吴小刚', role: 'student', email: 'wu@edu.cn',
+                class_id: 1 },
+            { id: 9, username: '2021009', password: '123456', real_name: '郑小芳', role: 'student', email: 'zheng@edu.cn',
+                class_id: 1 },
+            { id: 10, username: '2021010', password: '123456', real_name: '孙小浩', role: 'student', email: 'sun@edu.cn',
+                class_id: 1 },
+        ];
+
+        // 班级/专业
+        let classes = [
+            { id: 1, class_name: '计算机科学与技术2021级1班', major: '计算机科学与技术', admin_id: 1 }
+        ];
+
+        // 值日区域（大学特色：多区域）
+        let areas = [
+            { id: 1, area_name: 'A栋-101实验室', description: '计算机基础实验室', class_id: 1 },
+            { id: 2, area_name: 'A栋-102自习室', description: '开放式自习室', class_id: 1 },
+            { id: 3, area_name: 'B栋-201会议室', description: '小型会议室', class_id: 1 },
+            { id: 4, area_name: 'B栋-202机房', description: '专业机房', class_id: 1 },
+        ];
+
+        // 任务类型（按区域配置）
+        let dutyTypes = [
+            { id: 1, type_name: '桌面整理', description: '整理桌面、摆放物品', required_count: 1, area_id: 1 },
+            { id: 2, type_name: '地面清洁', description: '扫地、拖地', required_count: 2, area_id: 1 },
+            { id: 3, type_name: '设备检查', description: '检查电脑、投影仪', required_count: 1, area_id: 1 },
+            { id: 4, type_name: '桌椅摆放', description: '桌椅归位、整齐摆放', required_count: 2, area_id: 2 },
+            { id: 5, type_name: '地面清洁', description: '扫地、拖地', required_count: 2, area_id: 2 },
+            { id: 6, type_name: '会议准备', description: '准备茶水、资料', required_count: 1, area_id: 3 },
+            { id: 7, type_name: '会后整理', description: '清理会议室', required_count: 2, area_id: 3 },
+            { id: 8, type_name: '设备检查', description: '检查电脑、网络', required_count: 1, area_id: 4 },
+            { id: 9, type_name: '机房清洁', description: '吸尘、整理线路', required_count: 2, area_id: 4 },
+        ];
+
+        // 值日安排
+        let dutySchedules = [];
+
+        // 签到记录
+        let checkinLogs = [];
+
+        // 当前用户
+        let currentUser = null;
+        let currentPage = 'dashboard';
+
+        // ================================================================
+        //  工具函数
+        // ================================================================
+
+        function formatDate(date) {
+            const d = new Date(date);
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2,
+            '0');
+        }
+
+        function getToday() {
+            return formatDate(new Date());
+        }
+
+        function getWeekday(dateStr) {
+            const w = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            return w[new Date(dateStr).getDay()];
+        }
+
+        function getDayNum(dateStr) {
+            return new Date(dateStr).getDate();
+        }
+
+        function addDays(dateStr, days) {
+            const d = new Date(dateStr);
+            d.setDate(d.getDate() + days);
+            return formatDate(d);
+        }
+
+        function isWeekend(dateStr) {
+            const d = new Date(dateStr).getDay();
+            return d === 0 || d === 6;
+        }
+
+        function getUserName(id) {
+            const u = users.find(u => u.id === id);
+            return u ? u.real_name : '未知';
+        }
+
+        function getAreaName(id) {
+            const a = areas.find(a => a.id === id);
+            return a ? a.area_name : '未知区域';
+        }
+
+        function getTypeName(id) {
+            const t = dutyTypes.find(t => t.id === id);
+            return t ? t.type_name : '未知任务';
+        }
+
+        function getClassStudents(classId) {
+            return users.filter(u => u.class_id === classId && u.role !== 'admin');
+        }
+
+        function getClassAreas(classId) {
+            return areas.filter(a => a.class_id === classId);
+        }
+
+        function getAreaTasks(areaId) {
+            return dutyTypes.filter(t => t.area_id === areaId);
+        }
+
+        function getUserDutyCount(userId) {
+            return dutySchedules.filter(s => s.student_id === userId).length;
+        }
+
+        function getMaxId(arr) {
+            return arr.length > 0 ? Math.max(...arr.map(i => i.id)) : 0;
+        }
+
+        // ================================================================
+        //  核心业务
+        // ================================================================
+
+        // 智能排班（大学版：按区域 + 任务分配）
+        function generateSchedule(classId, startDate, endDate) {
+            const students = getClassStudents(classId);
+            const areas = getClassAreas(classId);
+
+            if (students.length === 0) return { success: false, message: '❌ 班级暂无学生' };
+            if (areas.length === 0) return { success: false, message: '❌ 请先配置值日区域' };
+
+            // 收集所有任务
+            let allTasks = [];
+            areas.forEach(a => {
+                const tasks = getAreaTasks(a.id);
+                tasks.forEach(t => {
+                    allTasks.push({ ...t, area_name: a.area_name });
+                });
+            });
+            if (allTasks.length === 0) return { success: false, message: '❌ 请为区域配置任务' };
+
+            // 删除旧排班
+            const toRemove = dutySchedules.filter(s =>
+                s.class_id === classId &&
+                s.duty_date >= startDate &&
+                s.duty_date <= endDate
+            );
+            toRemove.forEach(s => {
+                const idx = dutySchedules.indexOf(s);
+                if (idx !== -1) dutySchedules.splice(idx, 1);
+            });
+
+            // 打乱学生
+            let shuffled = [...students];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            let studentIdx = 0;
+            let current = new Date(startDate);
+            const end = new Date(endDate);
+            let created = 0;
+            let sid = getMaxId(dutySchedules);
+
+            // 统计每人已排次数，保证公平
+            const dutyCountMap = new Map();
+            students.forEach(s => dutyCountMap.set(s.id, getUserDutyCount(s.id)));
+
+            while (current <= end) {
+                const dateStr = formatDate(current);
+                if (!isWeekend(dateStr)) {
+                    const usedStudents = new Set();
+
+                    for (const task of allTasks) {
+                        let assigned = 0;
+                        let attempts = 0;
+                        const maxAttempts = shuffled.length * 5;
+
+                        while (assigned < task.required_count && attempts < maxAttempts) {
+                            attempts++;
+                            // 优先选值日次数少的
+                            let bestIdx = studentIdx % shuffled.length;
+                            let minCount = Infinity;
+                            for (let i = 0; i < shuffled.length; i++) {
+                                const idx = (studentIdx + i) % shuffled.length;
+                                const sid2 = shuffled[idx].id;
+                                if (!usedStudents.has(sid2)) {
+                                    const cnt = dutyCountMap.get(sid2) || 0;
+                                    if (cnt < minCount) {
+                                        minCount = cnt;
+                                        bestIdx = idx;
+                                    }
+                                }
+                            }
+                            const student = shuffled[bestIdx];
+                            studentIdx = (bestIdx + 1) % shuffled.length;
+
+                            if (!usedStudents.has(student.id)) {
+                                sid++;
+                                dutySchedules.push({
+                                    id: sid,
+                                    class_id: classId,
+                                    student_id: student.id,
+                                    student_name: student.real_name,
+                                    duty_date: dateStr,
+                                    duty_type_id: task.id,
+                                    duty_type_name: task.type_name,
+                                    area_id: task.area_id || 0,
+                                    area_name: task.area_name || '',
+                                    status: 'pending'
+                                });
+                                usedStudents.add(student.id);
+                                dutyCountMap.set(student.id, (dutyCountMap.get(student.id) || 0) + 1);
+                                assigned++;
+                                created++;
+                            }
+                        }
+                    }
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            // 更新用户值日次数
+            users.forEach(u => {
+                if (u.role !== 'admin') {
+                    u.duty_count = dutySchedules.filter(s => s.student_id === u.id).length;
+                }
+            });
+
+            return { success: true, message: `✅ 成功生成 ${created} 条排班记录`, count: created };
+        }
+
+        // 签到
+        function doCheckin(scheduleId, userId) {
+            const s = dutySchedules.find(d => d.id === scheduleId);
+            if (!s) return { success: false, message: '记录不存在' };
+            if (s.status === 'completed') return { success: false, message: '已签到' };
+            if (s.student_id !== userId) return { success: false, message: '只能签自己的值日' };
+
+            s.status = 'completed';
+            checkinLogs.push({
+                id: getMaxId(checkinLogs) + 1,
+                schedule_id: scheduleId,
+                student_id: userId,
+                checkin_time: new Date().toLocaleString(),
+                ip: '客户端'
+            });
+            return { success: true, message: '签到成功 ✅' };
+        }
+
+        // 统计
+        function getStatistics(classId, studentId) {
+            let filtered = dutySchedules;
+            if (classId) filtered = filtered.filter(s => s.class_id === classId);
+            if (studentId) filtered = filtered.filter(s => s.student_id === studentId);
+
+            const total = filtered.length;
+            const completed = filtered.filter(s => s.status === 'completed').length;
+            return {
+                total,
+                completed,
+                pending: total - completed,
+                rate: total > 0 ? Math.round((completed / total) * 100) : 0
+            };
+        }
+
+        // 排行榜
+        function getRanking(classId) {
+            const filtered = dutySchedules.filter(s => s.class_id === classId);
+            const map = new Map();
+            filtered.forEach(s => {
+                map.set(s.student_id, (map.get(s.student_id) || 0) + 1);
+            });
+            return Array.from(map.entries())
+                .map(([id, count]) => ({ id, name: getUserName(id), count }))
+                .sort((a, b) => b.count - a.count);
+        }
+
+        // 区域统计
+        function getAreaStats(classId) {
+            const areas2 = getClassAreas(classId);
+            return areas2.map(a => {
+                const tasks = getAreaTasks(a.id);
+                const schedules = dutySchedules.filter(s => s.area_id === a.id && s.class_id === classId);
+                const completed = schedules.filter(s => s.status === 'completed').length;
+                return {
+                    ...a,
+                    task_count: tasks.length,
+                    schedule_count: schedules.length,
+                    completed_count: completed,
+                    rate: schedules.length > 0 ? Math.round((completed / schedules.length) * 100) : 0
+                };
+            });
+        }
+
+        // 添加学生
+        function addStudent(username, realName, password, classId) {
+            if (users.find(u => u.username === username)) {
+                return { success: false, message: '学号已存在' };
+            }
+            const maxId = getMaxId(users);
+            users.push({
+                id: maxId + 1,
+                username,
+                password: password || '123456',
+                real_name: realName,
+                role: 'student',
+                email: '',
+                class_id: classId,
+                duty_count: 0
+            });
+            return { success: true, message: '添加成功' };
+        }
+
+        // 添加区域
+        function addArea(areaName, description, classId) {
+            const maxId = getMaxId(areas);
+            areas.push({
+                id: maxId + 1,
+                area_name: areaName,
+                description: description || '',
+                class_id: classId
+            });
+            return { success: true, message: '区域添加成功' };
+        }
+
+        // 添加任务
+        function addTask(typeName, description, requiredCount, areaId) {
+            const maxId = getMaxId(dutyTypes);
+            dutyTypes.push({
+                id: maxId + 1,
+                type_name: typeName,
+                description: description || '',
+                required_count: requiredCount || 1,
+                area_id: areaId
+            });
+            return { success: true, message: '任务添加成功' };
+        }
+
+        // 登录
+        function login(username, password) {
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = { ...user };
+                return { success: true, user };
+            }
+            return { success: false, message: '学号或密码错误' };
+        }
+
+        function logout() {
+            currentUser = null;
+            currentPage = 'dashboard';
+        }
+
+        // ================================================================
+        //  初始化示例数据
+        // ================================================================
+
+        function initData() {
+            if (dutySchedules.length === 0) {
+                const today = getToday();
+                const end = addDays(today, 14);
+                generateSchedule(1, today, end);
+            }
+        }
+
+        // ================================================================
+        //  渲染引擎
+        // ================================================================
+
+        function render() {
+            const app = document.getElementById('app');
+            if (!currentUser) {
+                renderLogin(app);
+            } else {
+                renderMain(app);
+            }
+        }
+
+        // ---------- 登录 ----------
+        function renderLogin(container) {
+            container.innerHTML = `
+                <div class="login-page">
+                    <div class="login-box">
+                        <div class="logo">
+                            <div class="icon">🏛️</div>
+                            <h1>校园值日智能排班系统</h1>
+                            <p>大学版 · 多区域管理 · 移动签到</p>
+                        </div>
+                        <div class="form-group">
+                            <label>📚 学号 / 工号</label>
+                            <input type="text" id="loginUsername" placeholder="请输入学号" value="2021001">
+                        </div>
+                        <div class="form-group">
+                            <label>🔒 密码</label>
+                            <input type="password" id="loginPassword" placeholder="请输入密码" value="123456">
+                        </div>
+                        <button class="btn btn-primary" onclick="handleLogin()">🚀 登录系统</button>
+                        <div class="login-tips">
+                            <div style="color:#9ca3af;font-size:13px;margin-bottom:6px;">📌 测试账号</div>
+                            <div class="tag-group">
+                                <span class="tag tag-purple">👨‍🏫 辅导员: 2021001 / 123456</span>
+                                <span class="tag tag-blue">👨‍🎓 班长: 2021002 / 123456</span>
+                                <span class="tag tag-green">👨‍🎓 学生: 2021003 / 123456</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ---------- 主界面 ----------
+        function renderMain(container) {
+            const isAdmin = currentUser.role === 'admin';
+            const isMonitor = currentUser.role === 'monitor';
+            const canManage = isAdmin || isMonitor;
+            const classId = currentUser.class_id;
+
+            const stats = getStatistics(classId, isAdmin ? null : currentUser.id);
+            const todayDuties = dutySchedules.filter(s =>
+                s.duty_date === getToday() &&
+                (isAdmin ? true : s.student_id === currentUser.id)
+            );
+            const upcomingDuties = dutySchedules.filter(s =>
+                s.duty_date > getToday() &&
+                s.status === 'pending' &&
+                (isAdmin ? true : s.student_id === currentUser.id)
+            ).sort((a, b) => a.duty_date.localeCompare(b.duty_date)).slice(0, 6);
+            const myDuties = dutySchedules.filter(s => s.student_id === currentUser.id)
+                .sort((a, b) => a.duty_date.localeCompare(b.duty_date));
+            const ranking = getRanking(classId);
+            const areaStats = getAreaStats(classId);
+            const students = getClassStudents(classId);
+            const allAreas = getClassAreas(classId);
+
+            // 侧边栏
+            const menu = [
+                { id: 'dashboard', icon: '📊', label: '仪表盘' },
+                { id: 'schedule', icon: '📅', label: '排班管理' },
+                { id: 'myduty', icon: '✅', label: '我的值日' },
+            ];
+            if (canManage) {
+                menu.push({ id: 'settings', icon: '⚙️', label: '系统设置' });
+            }
+
+            let contentHTML = '';
+
+            // ===== 仪表盘 =====
+            if (currentPage === 'dashboard') {
+                contentHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#dbeafe;">📊</div>
+                            <div class="info"><div class="value">${stats.total}</div><div class="label">总值日次数</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#dcfce7;">✅</div>
+                            <div class="info"><div class="value">${stats.completed}</div><div class="label">已完成</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#fef3c7;">⏳</div>
+                            <div class="info"><div class="value">${stats.pending}</div><div class="label">待完成</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#ede9fe;">📈</div>
+                            <div class="info"><div class="value">${stats.rate}%</div><div class="label">完成率</div></div>
+                        </div>
+                    </div>
+
+                    ${canManage ? `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">🏢 区域值日概况</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>区域</th><th>任务数</th><th>排班数</th><th>完成数</th><th>完成率</th></tr></thead>
+                                <tbody>
+                                    ${areaStats.map(a => `
+                                        <tr>
+                                            <td>${a.area_name}</td>
+                                            <td>${a.task_count}</td>
+                                            <td>${a.schedule_count}</td>
+                                            <td>${a.completed_count}</td>
+                                            <td><span class="tag ${a.rate >= 80 ? 'tag-success' : a.rate >= 50 ? 'tag-warning' : 'tag-danger'}">${a.rate}%</span></td>
+                                        </tr>
+                                    `).join('')}
+                                    ${areaStats.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">暂无区域配置</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">📅 今日值日 · ${getToday()} ${getWeekday(getToday())}</span>
+                            <span class="text-muted">${todayDuties.length} 项</span>
+                        </div>
+                        ${todayDuties.length > 0 ? `
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>区域</th><th>任务</th><th>值日生</th><th>状态</th><th>操作</th></tr></thead>
+                                    <tbody>
+                                        ${todayDuties.map(d => `
+                                            <tr>
+                                                <td>${d.area_name || '—'}</td>
+                                                <td>${d.duty_type_name}</td>
+                                                <td>${d.student_name}</td>
+                                                <td><span class="tag ${d.status === 'completed' ? 'tag-success' : 'tag-warning'}">${d.status === 'completed' ? '已完成' : '待完成'}</span></td>
+                                                <td>
+                                                    ${d.status !== 'completed' && d.student_id === currentUser.id
+                                                        ? `<button class="btn btn-success btn-xs" onclick="handleCheckin(${d.id})">签到</button>`
+                                                        : d.status === 'completed' ? '✅' : '—'}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <span class="icon">🎉</span>
+                                <div class="text">今天没有值日任务</div>
+                            </div>
+                        `}
+                    </div>
+
+                    ${upcomingDuties.length > 0 ? `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">⏰ 即将到来的值日</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>日期</th><th>区域</th><th>任务</th><th>值日生</th></tr></thead>
+                                <tbody>
+                                    ${upcomingDuties.map(d => `
+                                        <tr>
+                                            <td>${d.duty_date}</td>
+                                            <td>${d.area_name || '—'}</td>
+                                            <td>${d.duty_type_name}</td>
+                                            <td>${d.student_name}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${canManage && ranking.length > 0 ? `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">🏆 值日之星排行榜</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>排名</th><th>姓名</th><th>值日次数</th></tr></thead>
+                                <tbody>
+                                    ${ranking.slice(0, 10).map((r, i) => `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${r.name} ${i === 0 ? '👑' : ''}</td>
+                                            <td>${r.count} 次</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+            }
+
+            // ===== 排班管理 =====
+            else if (currentPage === 'schedule') {
+                contentHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">📋 排班管理</span>
+                            ${canManage ? `<button class="btn btn-primary btn-sm" onclick="showModal('generateModal')">✨ 生成排班</button>` : ''}
+                        </div>
+                        <div class="filter-bar">
+                            <input type="date" id="filterStart" placeholder="开始日期">
+                            <span style="color:#9ca3af;">至</span>
+                            <input type="date" id="filterEnd" placeholder="结束日期">
+                            <select id="filterStatus">
+                                <option value="">全部状态</option>
+                                <option value="pending">待完成</option>
+                                <option value="completed">已完成</option>
+                            </select>
+                            ${canManage ? `<select id="filterArea"><option value="">全部区域</option>${allAreas.map(a => `<option value="${a.id}">${a.area_name}</option>`).join('')}</select>` : ''}
+                            <button class="btn btn-primary btn-sm" onclick="applyFilter()">🔍 筛选</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetFilter()">↻ 重置</button>
+                        </div>
+                        <div id="scheduleTableWrap">
+                            ${renderScheduleTable(canManage)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ===== 我的值日 =====
+            else if (currentPage === 'myduty') {
+                const myStats = getStatistics(null, currentUser.id);
+                contentHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#dbeafe;">📋</div>
+                            <div class="info"><div class="value">${myStats.total}</div><div class="label">我的总值日</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#dcfce7;">✅</div>
+                            <div class="info"><div class="value">${myStats.completed}</div><div class="label">已完成</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#fef3c7;">⏳</div>
+                            <div class="info"><div class="value">${myStats.pending}</div><div class="label">待完成</div></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon-box" style="background:#ede9fe;">📈</div>
+                            <div class="info"><div class="value">${myStats.rate}%</div><div class="label">完成率</div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">📅 我的值日安排</span>
+                            <span class="text-muted">共 ${myDuties.length} 项</span>
+                        </div>
+                        ${myDuties.length > 0 ? `
+                            <div class="duty-list">
+                                ${myDuties.map(d => `
+                                    <div class="duty-item">
+                                        <div class="date-box">
+                                            <div class="day">${getDayNum(d.duty_date)}</div>
+                                            <div class="weekday">${getWeekday(d.duty_date)}</div>
+                                        </div>
+                                        <div class="info">
+                                            <div class="task">${d.duty_type_name}</div>
+                                            <div class="area">📍 ${d.area_name || '—'} · ${d.duty_date}</div>
+                                        </div>
+                                        <div>
+                                            <span class="tag ${d.status === 'completed' ? 'tag-success' : 'tag-warning'}">${d.status === 'completed' ? '✅ 已完成' : '⏳ 待完成'}</span>
+                                        </div>
+                                        <div class="action">
+                                            ${d.status !== 'completed'
+                                                ? `<button class="btn btn-success btn-sm" onclick="handleCheckin(${d.id})">签到</button>`
+                                                : '<span style="color:#22c55e;">✔</span>'}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <div class="text">暂无值日安排</div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+
+            // ===== 系统设置 =====
+            else if (currentPage === 'settings' && canManage) {
+                contentHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">👥 学生管理（${students.length}人）</span>
+                            <button class="btn btn-primary btn-sm" onclick="showModal('studentModal')">＋ 添加学生</button>
+                        </div>
+                        ${students.length > 0 ? `
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>姓名</th><th>学号</th><th>角色</th><th>值日次数</th></tr></thead>
+                                    <tbody>
+                                        ${students.map(s => `
+                                            <tr>
+                                                <td>${s.real_name}</td>
+                                                <td>${s.username}</td>
+                                                <td><span class="tag ${s.role === 'monitor' ? 'tag-purple' : 'tag-gray'}">${s.role === 'monitor' ? '班长' : '学生'}</span></td>
+                                                <td>${s.duty_count || 0} 次</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <span class="icon">👤</span>
+                                <div class="text">暂无学生</div>
+                            </div>
+                        `}
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">🏢 值日区域管理（${allAreas.length}个）</span>
+                            <button class="btn btn-primary btn-sm" onclick="showModal('areaModal')">＋ 添加区域</button>
+                        </div>
+                        ${allAreas.length > 0 ? `
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>区域名称</th><th>描述</th><th>任务数</th><th>排班数</th></tr></thead>
+                                    <tbody>
+                                        ${allAreas.map(a => {
+                                            const tasks = getAreaTasks(a.id);
+                                            const schedules = dutySchedules.filter(s => s.area_id === a.id);
+                                            return `<tr><td>${a.area_name}</td><td>${a.description || '—'}</td><td>${tasks.length}</td><td>${schedules.length}</td></tr>`;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <span class="icon">🏢</span>
+                                <div class="text">暂无区域配置</div>
+                            </div>
+                        `}
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">📋 任务管理</span>
+                            <button class="btn btn-primary btn-sm" onclick="showModal('taskModal')">＋ 添加任务</button>
+                        </div>
+                        ${dutyTypes.length > 0 ? `
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>任务名称</th><th>描述</th><th>所属区域</th><th>需要人数</th></tr></thead>
+                                    <tbody>
+                                        ${dutyTypes.map(t => `
+                                            <tr>
+                                                <td>${t.type_name}</td>
+                                                <td>${t.description || '—'}</td>
+                                                <td>${getAreaName(t.area_id)}</td>
+                                                <td>${t.required_count} 人</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="empty-state">
+                                <span class="icon">📝</span>
+                                <div class="text">暂无任务配置</div>
+                            </div>
+                        `}
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="title">ℹ️ 系统信息</span>
+                        </div>
+                        <div style="color:#6b7280;font-size:14px;line-height:2;">
+                            <div>📌 班级：${classes.find(c => c.id === classId)?.class_name || '未知'}</div>
+                            <div>👨‍🏫 管理员：${currentUser.real_name}</div>
+                            <div>👨‍🎓 学生总数：${students.length} 人</div>
+                            <div>🏢 值日区域：${allAreas.length} 个</div>
+                            <div>📋 任务类型：${dutyTypes.length} 项</div>
+                            <div>📊 总值日记录：${dutySchedules.filter(s => s.class_id === classId).length} 条</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ---------- 完整主界面 ----------
+            container.innerHTML = `
+                <div class="app">
+                    <nav class="navbar">
+                        <div class="brand">
+                            <span>🏛️</span>
+                            <span class="gradient">值日排班 · 大学版</span>
+                        </div>
+                        <div class="user-area">
+                            <div class="avatar">${currentUser.real_name[0]}</div>
+                            <span class="uname">${currentUser.real_name}</span>
+                            <span class="role-badge">${currentUser.role === 'admin' ? '👨‍🏫 辅导员' : currentUser.role === 'monitor' ? '👨‍🎓 班长' : '👨‍🎓 学生'}</span>
+                            <span class="logout-btn" onclick="handleLogout()">🚪 退出</span>
+                        </div>
+                    </nav>
+                    <div class="main">
+                        <nav class="sidebar">
+                            ${menu.map(item => `
+                                <div class="sidebar-item ${currentPage === item.id ? 'active' : ''}" onclick="navigate('${item.id}')">
+                                    <span class="icon">${item.icon}</span>
+                                    <span class="label">${item.label}</span>
+                                </div>
+                            `).join('')}
+                        </nav>
+                        <main class="content">
+                            ${contentHTML}
+                        </main>
+                    </div>
+                </div>
+
+                <!-- 生成排班 -->
+                <div class="modal-overlay" id="generateModal">
+                    <div class="modal">
+                        <div class="modal-header"><h3>✨ 生成排班</h3><span class="close" onclick="closeModal('generateModal')">✕</span></div>
+                        <div class="form-group"><label>开始日期</label><input type="date" id="genStart" value="${getToday()}"></div>
+                        <div class="form-group"><label>结束日期</label><input type="date" id="genEnd" value="${addDays(getToday(), 14)}"></div>
+                        <button class="btn btn-primary" onclick="doGenerate()">🚀 开始生成</button>
+                    </div>
+                </div>
+
+                <!-- 添加学生 -->
+                <div class="modal-overlay" id="studentModal">
+                    <div class="modal">
+                        <div class="modal-header"><h3>➕ 添加学生</h3><span class="close" onclick="closeModal('studentModal')">✕</span></div>
+                        <div class="form-group"><label>学号</label><input type="text" id="newUsername" placeholder="学号"></div>
+                        <div class="form-group"><label>姓名</label><input type="text" id="newRealName" placeholder="真实姓名"></div>
+                        <div class="form-group"><label>密码</label><input type="text" id="newPassword" value="123456"></div>
+                        <button class="btn btn-primary" onclick="doAddStudent()">✅ 确认添加</button>
+                    </div>
+                </div>
+
+                <!-- 添加区域 -->
+                <div class="modal-overlay" id="areaModal">
+                    <div class="modal">
+                        <div class="modal-header"><h3>🏢 添加值日区域</h3><span class="close" onclick="closeModal('areaModal')">✕</span></div>
+                        <div class="form-group"><label>区域名称</label><input type="text" id="newAreaName" placeholder="如：A栋-101实验室"></div>
+                        <div class="form-group"><label>描述</label><input type="text" id="newAreaDesc" placeholder="区域描述（可选）"></div>
+                        <button class="btn btn-primary" onclick="doAddArea()">✅ 确认添加</button>
+                    </div>
+                </div>
+
+                <!-- 添加任务 -->
+                <div class="modal-overlay" id="taskModal">
+                    <div class="modal">
+                        <div class="modal-header"><h3>📝 添加任务</h3><span class="close" onclick="closeModal('taskModal')">✕</span></div>
+                        <div class="form-group"><label>任务名称</label><input type="text" id="newTaskName" placeholder="如：桌面整理"></div>
+                        <div class="form-group"><label>描述</label><input type="text" id="newTaskDesc" placeholder="任务描述（可选）"></div>
+                        <div class="form-group"><label>所属区域</label>
+                            <select id="newTaskArea">
+                                ${allAreas.map(a => `<option value="${a.id}">${a.area_name}</option>`).join('')}
+                                ${allAreas.length === 0 ? '<option value="">请先添加区域</option>' : ''}
+                            </select>
+                        </div>
+                        <div class="form-group"><label>需要人数</label><input type="number" id="newTaskCount" value="1" min="1" max="5"></div>
+                        <button class="btn btn-primary" onclick="doAddTask()">✅ 确认添加</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ---------- 排班表格 ----------
+        function renderScheduleTable(canManage) {
+            let list = [...dutySchedules];
+            if (!canManage) {
+                list = list.filter(s => s.student_id === currentUser.id);
+            }
+
+            const start = document.getElementById('filterStart');
+            const end = document.getElementById('filterEnd');
+            const status = document.getElementById('filterStatus');
+            const area = document.getElementById('filterArea');
+
+            if (start && start.value) list = list.filter(s => s.duty_date >= start.value);
+            if (end && end.value) list = list.filter(s => s.duty_date <= end.value);
+            if (status && status.value) list = list.filter(s => s.status === status.value);
+            if (area && area.value) list = list.filter(s => s.area_id === parseInt(area.value));
+
+            list.sort((a, b) => a.duty_date.localeCompare(b.duty_date));
+
+            if (list.length === 0) {
+                return `<div class="empty-state"><span class="icon">📭</span><div class="text">暂无匹配记录</div></div>`;
+            }
+
+            return `
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>日期</th><th>区域</th><th>任务</th><th>值日生</th><th>状态</th>${canManage ? '<th>操作</th>' : ''}</tr></thead>
+                        <tbody>
+                            ${list.map(s => `
+                                <tr>
+                                    <td>${s.duty_date}</td>
+                                    <td>${s.area_name || '—'}</td>
+                                    <td>${s.duty_type_name}</td>
+                                    <td>${s.student_name}</td>
+                                    <td><span class="tag ${s.status === 'completed' ? 'tag-success' : 'tag-warning'}">${s.status === 'completed' ? '已完成' : '待完成'}</span></td>
+                                    ${canManage ? `
+                                        <td>
+                                            ${s.status !== 'completed'
+                                                ? `<button class="btn btn-success btn-xs" onclick="handleAdminCheckin(${s.id})">签到</button>`
+                                                : '✅'}
+                                        </td>
+                                    ` : ''}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  全局函数
+        // ================================================================
+
+        window.handleLogin = function() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!username || !password) { alert('请填写学号和密码'); return; }
+            const result = login(username, password);
+            if (result.success) {
+                render();
+            } else {
+                alert('❌ ' + result.message);
+            }
+        };
+
+        window.handleLogout = function() {
+            if (confirm('确认退出吗？')) { logout();
+                render(); }
+        };
+
+        window.navigate = function(page) {
+            currentPage = page;
+            render();
+        };
+
+        window.showModal = function(id) {
+            document.getElementById(id).classList.add('active');
+        };
+
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        window.doGenerate = function() {
+            const start = document.getElementById('genStart').value;
+            const end = document.getElementById('genEnd').value;
+            if (!start || !end) { alert('请选择日期范围'); return; }
+            if (start > end) { alert('开始日期不能晚于结束日期'); return; }
+            const result = generateSchedule(currentUser.class_id, start, end);
+            alert(result.message);
+            closeModal('generateModal');
+            render();
+        };
+
+        window.handleCheckin = function(id) {
+            const result = doCheckin(id, currentUser.id);
+            alert(result.message);
+            render();
+        };
+
+        window.handleAdminCheckin = function(id) {
+            if (!confirm('确认帮该学生签到吗？')) return;
+            const s = dutySchedules.find(d => d.id === id);
+            if (!s) { alert('记录不存在'); return; }
+            if (s.status === 'completed') { alert('已签到'); return; }
+            s.status = 'completed';
+            checkinLogs.push({
+                id: getMaxId(checkinLogs) + 1,
+                schedule_id: id,
+                student_id: s.student_id,
+                checkin_time: new Date().toLocaleString(),
+                admin_id: currentUser.id,
+                ip: '管理员代签'
+            });
+            alert('签到成功 ✅');
+            render();
+        };
+
+        window.applyFilter = function() { render(); };
+        window.resetFilter = function() {
+            document.getElementById('filterStart').value = '';
+            document.getElementById('filterEnd').value = '';
+            document.getElementById('filterStatus').value = '';
+            const area = document.getElementById('filterArea');
+            if (area) area.value = '';
+            render();
+        };
+
+        window.doAddStudent = function() {
+            const username = document.getElementById('newUsername').value.trim();
+            const realName = document.getElementById('newRealName').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            if (!username || !realName) { alert('请填写完整信息'); return; }
+            const result = addStudent(username, realName, password, currentUser.class_id);
+            alert(result.message);
+            if (result.success) { closeModal('studentModal');
+                render(); }
+        };
+
+        window.doAddArea = function() {
+            const name = document.getElementById('newAreaName').value.trim();
+            const desc = document.getElementById('newAreaDesc').value.trim();
+            if (!name) { alert('请输入区域名称'); return; }
+            const result = addArea(name, desc, currentUser.class_id);
+            alert(result.message);
+            if (result.success) { closeModal('areaModal');
+                render(); }
+        };
+
+        window.doAddTask = function() {
+            const name = document.getElementById('newTaskName').value.trim();
+            const desc = document.getElementById('newTaskDesc').value.trim();
+            const areaId = parseInt(document.getElementById('newTaskArea').value);
+            const count = parseInt(document.getElementById('newTaskCount').value) || 1;
+            if (!name) { alert('请输入任务名称'); return; }
+            if (!areaId) { alert('请选择所属区域'); return; }
+            const result = addTask(name, desc, count, areaId);
+            alert(result.message);
+            if (result.success) { closeModal('taskModal');
+                render(); }
+        };
+
+        // 点击遮罩关闭弹窗
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // 回车登录
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !currentUser) {
+                handleLogin();
+            }
+        });
+
+        // ================================================================
+        //  启动
+        // ================================================================
+
+        initData();
+        render();
+    </script>
+</body>
+</html>
